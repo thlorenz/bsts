@@ -1,0 +1,29 @@
+name: bsts
+description: A new Flutter project.
+
+version: 0.1.0
+
+environment:
+  sdk: ">=2.4.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^0.1.2
+  logging: ^0.11.3+2
+  equatable: ^0.4.0
+  rxdart: ^0.22.1+1
+  provider: ^3.0.0+1
+  path_provider: ^1.2.0
+  sqflite: ^1.1.6+3
+  timeago: ^2.0.18
+  font_awesome_flutter: ^8.5.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
+
