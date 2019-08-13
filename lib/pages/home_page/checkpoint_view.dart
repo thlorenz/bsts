@@ -15,9 +15,11 @@ class CheckpointView extends StatelessWidget {
     final theme = Theme.of(context);
     final checked = checkpoint.lastCheck != null;
     final lastCheck = checked ? timeago.format(checkpoint.lastCheck) : null;
-    final borderSide = BorderSide(width: 1, color: Colors.white24);
+    final borderSide = checked
+        ? BorderSide(width: 1, color: Colors.white24)
+        : BorderSide(width: 2, color: Colors.orangeAccent);
     return Opacity(
-      opacity: checked ? 0.5 : 1.0,
+      opacity: checked ? 0.6 : 1.0,
       child: Container(
         padding: EdgeInsets.all(10),
         margin: EdgeInsets.all(4),

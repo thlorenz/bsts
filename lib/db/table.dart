@@ -3,18 +3,23 @@ import 'package:sqflite/sqflite.dart';
 
 DateTime _date(Map<String, dynamic> row, String columnID) {
   final n = row[columnID] as int;
-  return n == null ? null : DateTime.fromMillisecondsSinceEpoch(n);
+  return n == 0 ? null : DateTime.fromMillisecondsSinceEpoch(n);
+}
+
+int _lastCheck(Checkpoint checkpoint) {
+  if (checkpoint.lastCheck == null) return 0;
+  return checkpoint.lastCheck.millisecondsSinceEpoch;
 }
 
 const String CREATE_TABLE_SQL = '''
 CREATE TABLE IF NOT EXISTS ${CheckpointTable.table} (
   ${CheckpointTable.id}              text PRIMARY KEY NOT NULL,
   ${CheckpointTable.iconCodePoint}   integer NOT NULL,
-  ${CheckpointTable.iconFontPackage} text NOT NULL,
+  ${CheckpointTable.iconFontPackage} text,
   ${CheckpointTable.iconFontFamily}  text NOT NULL,
   ${CheckpointTable.iconColor}       integer NOT NULL,
   ${CheckpointTable.label}           text NOT NULL,
-  ${CheckpointTable.lastCheck}       integer
+  ${CheckpointTable.lastCheck}       integer NOT NULL
 );
 ''';
 
@@ -50,7 +55,7 @@ class CheckpointTable {
       CheckpointTable.iconFontFamily: checkpoint.iconFontFamily,
       CheckpointTable.iconColor: checkpoint.iconColor,
       CheckpointTable.label: checkpoint.label,
-      CheckpointTable.lastCheck: checkpoint.lastCheck,
+      CheckpointTable.lastCheck: _lastCheck(checkpoint),
     };
   }
 

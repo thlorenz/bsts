@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bsts/bloc/checkpoints/checkpoints_event.dart';
 import 'package:bsts/bloc/checkpoints/checkpoints_state.dart';
 import 'package:bsts/core/log.dart';
@@ -24,13 +26,30 @@ class CheckpointsBloc extends BlocBase<CheckpointsState, CheckpointsEvent> {
           inspectEvent: inspectEvent,
         ) {
     _log.finest(() => 'creating');
+    _checkpointsChangedSub =
+        checkpointsManager.checkpointsChanged$.listen(_onCheckpointsChanged);
   }
 
   final ICheckpointsManager checkpointsManager;
+  StreamSubscription<void> _checkpointsChangedSub;
+
+  void reset() {
+    _log.info('resetting');
+    checkpointsManager.resetAll();
+  }
+
+  void add() {
+    _log.info('adding');
+  }
+
+  void _onCheckpointsChanged(void _) {
+    state(CheckpointsState.changed(checkpointsManager.checkpoints));
+  }
 
   @override
   void dispose() {
     _log.finest(() => 'disposing');
+    _checkpointsChangedSub.cancel();
     super.dispose();
   }
 }

@@ -13,7 +13,7 @@ final Log<BstsDatabase> _log = Log();
 abstract class IDatabase implements IDisposable {
   Future<void> drop();
   Future<List<Checkpoint>> getCheckpoints();
-  Future<void> upsertCheckpoint(Checkpoint repo);
+  Future<void> upsertCheckpoint(Checkpoint checkpoint);
   Future<int> deleteCheckpoint(String id);
 }
 

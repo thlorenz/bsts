@@ -4,6 +4,7 @@ import 'package:meta/meta.dart';
 
 enum CheckpointsStage {
   initialized,
+  changed,
 }
 
 @immutable
@@ -16,6 +17,13 @@ class CheckpointsState extends Equatable {
   factory CheckpointsState.initial(List<Checkpoint> checkpoints) {
     return CheckpointsState(
       stage: CheckpointsStage.initialized,
+      checkpoints: checkpoints,
+    );
+  }
+
+  factory CheckpointsState.changed(List<Checkpoint> checkpoints) {
+    return CheckpointsState(
+      stage: CheckpointsStage.changed,
       checkpoints: checkpoints,
     );
   }
