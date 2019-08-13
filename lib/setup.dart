@@ -4,7 +4,6 @@ import 'package:bsts/core/interfaces.dart';
 import 'package:bsts/core/timer.dart';
 import 'package:bsts/db/database.dart';
 import 'package:bsts/managers/checkpoints_manager/checkpoints_manager.dart';
-import 'package:bsts/models/checkpoint.dart';
 import 'package:bsts/packages/se_bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as path;
@@ -14,7 +13,7 @@ import 'package:provider/provider.dart';
 class Setup implements IDisposable {
   Setup({this.databaseName = 'bsts.sqlite'});
 
-  IDatabase<Checkpoint> database;
+  IDatabase database;
   String databasePath;
   String databaseName;
 
@@ -26,7 +25,7 @@ class Setup implements IDisposable {
   Future<void> init() async {
     await _initPaths();
     await _initDatabase();
-    _initServices();
+    await _initServices();
     _initBlocInspections();
   }
 
@@ -51,9 +50,10 @@ class Setup implements IDisposable {
     database = db;
   }
 
-  void _initServices() {
+  Future<void> _initServices() async {
     timer = Timer();
     checkpointsManager = CheckpointsManager(database: database);
+    await checkpointsManager.init();
   }
 
   void _initBlocInspections() {

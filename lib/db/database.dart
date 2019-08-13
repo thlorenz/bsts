@@ -10,14 +10,14 @@ const int DATABASE_VERSION = 1;
 
 final Log<BstsDatabase> _log = Log();
 
-abstract class IDatabase<T> implements IDisposable {
+abstract class IDatabase implements IDisposable {
   Future<void> drop();
-  Future<Iterable<T>> getAll();
-  Future<void> upsert(T repo);
-  Future<int> delete(String id);
+  Future<List<Checkpoint>> getCheckpoints();
+  Future<void> upsertCheckpoint(Checkpoint repo);
+  Future<int> deleteCheckpoint(String id);
 }
 
-class BstsDatabase implements IDatabase<Checkpoint> {
+class BstsDatabase implements IDatabase {
   BstsDatabase(this.databasePath);
 
   final String databasePath;
@@ -40,30 +40,30 @@ class BstsDatabase implements IDatabase<Checkpoint> {
     return init();
   }
 
-  Future<Iterable<Checkpoint>> getAll() async {
+  Future<List<Checkpoint>> getCheckpoints() async {
     final repoRows = await _db.query(
-      Table.table,
-      columns: Table.columns,
+      CheckpointTable.table,
+      columns: CheckpointTable.columns,
     );
-    final repos = repoRows.map(Table.fromRow);
+    final repos = repoRows.map(CheckpointTable.fromRow);
     _log.finest('Retrieved repos $repos');
-    return repos;
+    return repos.toList();
   }
 
-  Future<void> upsert(Checkpoint checkpoint) async {
+  Future<void> upsertCheckpoint(Checkpoint checkpoint) async {
     _log.finer(() => 'Inserting ${checkpoint.id}');
     return _db.insert(
-      Table.table,
-      Table.row(checkpoint),
+      CheckpointTable.table,
+      CheckpointTable.row(checkpoint),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
   }
 
-  Future<int> delete(String id) {
+  Future<int> deleteCheckpoint(String id) {
     _log.finer(() => 'Deleting $id');
     return _db.delete(
-      Table.table,
-      where: '${Table.id} = ?',
+      CheckpointTable.table,
+      where: '${CheckpointTable.id} = ?',
       whereArgs: <String>[id],
     );
   }
@@ -73,7 +73,7 @@ class BstsDatabase implements IDatabase<Checkpoint> {
   }
 
   Future<void> _ondatabaseCreate(Database db, int version) async {
-    return Table.create(db);
+    return CheckpointTable.create(db);
   }
 
   void dispose() {
