@@ -1,7 +1,7 @@
-import 'package:flutter/widgets.dart';
-import 'package:provider/provider.dart';
 import 'package:bsts/packages/se_bloc/bloc.dart';
 import 'package:bsts/packages/se_bloc/event_listener.dart';
+import 'package:flutter/widgets.dart';
+import 'package:provider/provider.dart';
 import 'package:rxdart/rxdart.dart';
 
 typedef SupplyWidgetState<TState> = Widget Function(TState state);
@@ -48,9 +48,11 @@ Widget blocProvider<TBloc extends IBloc<TState, TEvent>, TState, TEvent>(
   ValueBuilder<TBloc> builder,
   void Function(BuildContext, TBloc, TEvent) onEvent,
   StateToView<TState> stateToView, {
+  Key key,
   TState stateOverride,
 }) {
   return Provider<TBloc>(
+    key: key,
     builder: builder,
     dispose: (_, bloc) => bloc.dispose(),
     child: _BlocProvidedWidget(
