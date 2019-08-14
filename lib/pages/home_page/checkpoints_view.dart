@@ -10,24 +10,22 @@ class CheckpointsView extends StatelessWidget {
   const CheckpointsView({@required this.state});
   final CheckpointsState state;
 
-  static Widget providedState(CheckpointsState checkpointsState) {
-    assert(checkpointsState != null);
-    return CheckpointsView(state: checkpointsState);
-  }
-
   @override
   Widget build(BuildContext context) {
     return GridView.builder(
       itemCount: state.checkpoints != null ? state.checkpoints.length : 0,
       gridDelegate:
           SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
-      itemBuilder: (ctx, idx) =>
-          blocProvider<CheckpointBloc, CheckpointState, CheckpointEvent>(
-        context,
-        checkpointBlocBuilder(context, state.checkpoints[idx].id),
-        _onCheckpointChanged,
-        CheckpointView.stateToView,
-      ),
+      itemBuilder: (ctx, idx) {
+        final id = state.checkpoints[idx].id;
+        return blocProvider<CheckpointBloc, CheckpointState, CheckpointEvent>(
+          ctx,
+          checkpointBlocBuilder(ctx, id),
+          _onCheckpointChanged,
+          CheckpointView.stateToView,
+          key: Key(id),
+        );
+      },
     );
   }
 

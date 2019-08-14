@@ -25,9 +25,10 @@ class CheckpointState extends Equatable {
 
   factory CheckpointState.initial(Checkpoint checkpoint) {
     return CheckpointState(
-        stage: CheckpointStage.initialized,
-        checkpoint: checkpoint,
-        lastCheck: _lastCheck(checkpoint));
+      stage: CheckpointStage.initialized,
+      checkpoint: checkpoint,
+      lastCheck: _lastCheck(checkpoint),
+    );
   }
 
   factory CheckpointState.changed(
@@ -50,7 +51,10 @@ class CheckpointState extends Equatable {
     );
   }
 
-  CheckpointState copyWith({CheckpointStage stage, Checkpoint checkpoint}) {
+  CheckpointState copyWith({
+    CheckpointStage stage,
+    Checkpoint checkpoint,
+  }) {
     return CheckpointState(
       stage: stage ?? this.stage,
       checkpoint: checkpoint ?? this.checkpoint,

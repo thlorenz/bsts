@@ -10,24 +10,51 @@ class HomePage extends StatelessWidget {
     return Provider<CheckpointsBloc>(
       builder: checkpointsBlocBuilder(context),
       dispose: (ctx, bloc) => bloc.dispose(),
-      child: SafeArea(child: _HomePage()),
+      child: SafeArea(
+          child:
+              blocProvider<CheckpointsBloc, CheckpointsState, CheckpointsEvent>(
+        context,
+        checkpointsBlocBuilder(context),
+        _onCheckpointsChanged,
+        _HomePage.stateToView,
+      )),
     );
   }
+
+  void _onCheckpointsChanged(
+    BuildContext context,
+    CheckpointsBloc bloc,
+    CheckpointsEvent event,
+  ) {}
 }
 
 class _HomePage extends StatelessWidget {
+  const _HomePage({@required this.state});
+  final CheckpointsState state;
+
+  static Widget stateToView(
+      BuildContext context, CheckpointsState checkpointsState) {
+    assert(checkpointsState != null);
+    return _HomePage(state: checkpointsState);
+  }
+
   @override
   Widget build(BuildContext context) {
+    final filter = state.filteringUnverified
+        ? BottomNavigationBarItem(
+            icon: Icon(Icons.list),
+            title: Text('all'),
+          )
+        : BottomNavigationBarItem(
+            icon: Icon(Icons.filter_list),
+            title: Text('filter'),
+          );
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
         title: Text('Better Safe Than Sorry'),
       ),
-      body: blocBuilder<CheckpointsBloc, CheckpointsState, CheckpointsEvent>(
-        context,
-        _onCheckpointsChanged,
-        CheckpointsView.providedState,
-      ),
+      body: CheckpointsView(state: state),
       bottomNavigationBar: BottomNavigationBar(
         onTap: (idx) => _onNavigationItemSelected(context, idx),
         items: [
@@ -35,6 +62,7 @@ class _HomePage extends StatelessWidget {
             icon: Icon(Icons.redo),
             title: Text('redo'),
           ),
+          filter,
           BottomNavigationBarItem(
             icon: Icon(Icons.add),
             title: Text('add'),
@@ -48,12 +76,7 @@ class _HomePage extends StatelessWidget {
     final bloc = Provider.of<CheckpointsBloc>(context);
 
     if (idx == 0) return bloc.reset();
-    if (idx == 1) return bloc.add();
+    if (idx == 1) return bloc.toggleUnverified();
+    if (idx == 2) return bloc.add();
   }
-
-  void _onCheckpointsChanged(
-    BuildContext context,
-    CheckpointsBloc bloc,
-    CheckpointsEvent event,
-  ) {}
 }

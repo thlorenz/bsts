@@ -10,7 +10,7 @@ import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 
-import 'bloc/checkpoint/checkpoint_bloc.dart';
+import 'bloc/checkpoints/checkpoints_bloc.dart';
 
 class Setup implements IDisposable {
   Setup({this.databaseName = 'bsts.sqlite'});
@@ -60,7 +60,7 @@ class Setup implements IDisposable {
   }
 
   void _initBlocInspections() {
-    BlocInspector.inspectTypes.addAll([CheckpointState]);
+    BlocInspector.inspectTypes.addAll([CheckpointsState]);
   }
 
   void dispose() {

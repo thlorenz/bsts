@@ -1,4 +1,5 @@
 import 'dart:async' as dart_async;
+import 'dart:async';
 
 import 'package:bsts/bloc/checkpoint/checkpoint_event.dart';
 import 'package:bsts/bloc/checkpoint/checkpoint_state.dart';
@@ -27,7 +28,7 @@ class CheckpointBloc extends BlocBase<CheckpointState, CheckpointEvent> {
             inspectEvent: inspectEvent) {
     _log.finest(() => 'creating $id');
 
-    checkpointsManager.checkpointChanged$
+    _checkpointChangedSub = checkpointsManager.checkpointChanged$
         .where((id) => id == this.id)
         .listen(_onCheckpointChanged);
 
@@ -38,6 +39,7 @@ class CheckpointBloc extends BlocBase<CheckpointState, CheckpointEvent> {
   final ITimer timer;
   final String id;
 
+  StreamSubscription<String> _checkpointChangedSub;
   void Function() cancelTick;
 
   void verify() {
@@ -59,6 +61,7 @@ class CheckpointBloc extends BlocBase<CheckpointState, CheckpointEvent> {
   void dispose() {
     _log.finest(() => 'disposing $id');
     if (cancelTick != null) cancelTick();
+    _checkpointChangedSub.cancel();
     super.dispose();
   }
 }
