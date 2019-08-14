@@ -12,7 +12,7 @@ class CheckpointsState extends Equatable {
   CheckpointsState({
     @required this.stage,
     @required this.checkpoints,
-  }) : super(<dynamic>[stage]);
+  }) : super(<dynamic>[stage, checkpoints]);
 
   factory CheckpointsState.initial(List<Checkpoint> checkpoints) {
     return CheckpointsState(
@@ -40,4 +40,11 @@ class CheckpointsState extends Equatable {
 
   final List<Checkpoint> checkpoints;
   final CheckpointsStage stage;
+
+  String toString() {
+    return '''CheckpointsState { 
+      stage: $stage,
+      checkpoints: $checkpoints
+    }''';
+  }
 }

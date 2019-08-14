@@ -57,4 +57,12 @@ class Checkpoint extends Equatable {
       lastCheck: lastCheck,
     );
   }
+
+  String toString() {
+    return '''Checkpoint{
+       id: $id,
+       label: $label,
+       lastCheck: $lastCheck 
+     }''';
+  }
 }

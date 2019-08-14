@@ -10,6 +10,8 @@ import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 
+import 'bloc/checkpoint/checkpoint_bloc.dart';
+
 class Setup implements IDisposable {
   Setup({this.databaseName = 'bsts.sqlite'});
 
@@ -32,6 +34,7 @@ class Setup implements IDisposable {
   MultiProvider provide(Widget child) {
     return MultiProvider(
       providers: [
+        Provider.value(value: timer),
         Provider.value(value: checkpointsManager),
       ],
       child: child,
@@ -57,7 +60,7 @@ class Setup implements IDisposable {
   }
 
   void _initBlocInspections() {
-    BlocInspector.inspectTypes.addAll([]);
+    BlocInspector.inspectTypes.addAll([CheckpointState]);
   }
 
   void dispose() {

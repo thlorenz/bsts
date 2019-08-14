@@ -1,25 +1,31 @@
-import 'package:bsts/models/checkpoint.dart';
+import 'package:bsts/bloc/checkpoint/checkpoint_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
-import 'package:timeago/timeago.dart' as timeago;
+import 'package:provider/provider.dart';
 
 class CheckpointView extends StatelessWidget {
   const CheckpointView({
-    @required this.checkpoint,
+    @required this.state,
     @required Key key,
   }) : super(key: key);
-  final Checkpoint checkpoint;
+  final CheckpointState state;
+
+  static Widget stateToView(BuildContext context, CheckpointState state) {
+    assert(state?.checkpoint != null);
+    final key = Key(state.checkpoint.id);
+    return CheckpointView(state: state, key: key);
+  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final checked = checkpoint.lastCheck != null;
-    final lastCheck = checked ? timeago.format(checkpoint.lastCheck) : null;
-    final borderSide = checked
-        ? BorderSide(width: 1, color: Colors.white24)
+    final bloc = Provider.of<CheckpointBloc>(context);
+    final checkpoint = state.checkpoint;
+    final borderSide = state.checked
+        ? BorderSide(width: 2, color: Colors.white24)
         : BorderSide(width: 2, color: Colors.orangeAccent);
     return Opacity(
-      opacity: checked ? 0.6 : 1.0,
+      opacity: state.checked ? 0.6 : 1.0,
       child: Container(
         padding: EdgeInsets.all(10),
         margin: EdgeInsets.all(4),
@@ -33,43 +39,46 @@ class CheckpointView extends StatelessWidget {
           ),
           borderRadius: BorderRadius.all(Radius.circular(10)),
         ),
-        child: GridTile(
-            header: Text(
-              checkpoint.label,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: theme.primaryTextTheme.headline.color,
-                fontSize: 24,
+        child: InkWell(
+          onTap: bloc.verify,
+          child: GridTile(
+              header: Text(
+                checkpoint.label,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: theme.primaryTextTheme.headline.color,
+                  fontSize: 24,
+                ),
               ),
-            ),
-            child: Icon(
-              IconData(
-                checkpoint.iconCodePoint,
-                fontPackage: checkpoint.iconFontPackage,
-                fontFamily: checkpoint.iconFontFamily,
+              child: Icon(
+                IconData(
+                  checkpoint.iconCodePoint,
+                  fontPackage: checkpoint.iconFontPackage,
+                  fontFamily: checkpoint.iconFontFamily,
+                ),
+                color: Color(checkpoint.iconColor),
+                size: 80,
               ),
-              color: Color(checkpoint.iconColor),
-              size: 80,
-            ),
-            footer: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: checked
-                  ? <Widget>[
-                      Icon(Icons.check, color: Colors.greenAccent),
-                      Text(
-                        lastCheck,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontStyle: FontStyle.italic,
-                          color: checked
-                              ? Colors.greenAccent
-                              : theme.primaryTextTheme.subhead.color,
-                          fontSize: 18,
+              footer: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: state.checked
+                    ? <Widget>[
+                        Icon(Icons.check, color: Colors.greenAccent),
+                        Text(
+                          state.lastCheck,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontStyle: FontStyle.italic,
+                            color: state.checked
+                                ? Colors.greenAccent
+                                : theme.primaryTextTheme.subhead.color,
+                            fontSize: 18,
+                          ),
                         ),
-                      ),
-                    ]
-                  : [],
-            )),
+                      ]
+                    : [],
+              )),
+        ),
       ),
     );
   }

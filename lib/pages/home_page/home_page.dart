@@ -32,8 +32,8 @@ class _HomePage extends StatelessWidget {
         onTap: (idx) => _onNavigationItemSelected(context, idx),
         items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.directions_walk),
-            title: Text('start'),
+            icon: Icon(Icons.redo),
+            title: Text('redo'),
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.add),
