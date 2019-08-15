@@ -2,9 +2,6 @@ import 'package:bsts/models/checkpoint.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:uuid/uuid.dart';
-
-final _uuid = Uuid();
 
 Checkpoint _c(String label, IconData icon, Color iconColor) {
   return Checkpoint(

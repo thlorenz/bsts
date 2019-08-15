@@ -1,5 +1,7 @@
 import 'package:bsts/bloc/add_checkpoint/checkpoints.dart';
+import 'package:bsts/pages/router.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class SelectCategoryPage extends StatelessWidget {
   @override
@@ -11,8 +13,28 @@ class SelectCategoryPage extends StatelessWidget {
           title: Text('Select Checkpoint Category'),
         ),
         body: _SelectCategoryView(),
+        bottomNavigationBar: BottomNavigationBar(
+          onTap: (idx) => _onNavigationItemSelected(context, idx),
+          items: [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              title: Text('Home'),
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(
+                FontAwesomeIcons.question,
+              ),
+              title: Text('Help'),
+            ),
+          ],
+        ),
       ),
     );
+  }
+
+  void _onNavigationItemSelected(BuildContext context, int idx) {
+    if (idx == 0) Navigator.of(context).pop();
+    if (idx == 1) print('TODO: help');
   }
 }
 
@@ -52,7 +74,7 @@ class _SelectCategoryItem extends StatelessWidget {
         borderRadius: BorderRadius.all(Radius.circular(10)),
       ),
       child: InkWell(
-        onTap: null, // TODO: navigate
+        onTap: () => _onTap(context),
         child: GridTile(
           header: Text(
             category.label,
@@ -75,5 +97,9 @@ class _SelectCategoryItem extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void _onTap(BuildContext context) {
+    Navigator.of(context).pushNamed(Routes.CHECKPOINT_ADD, arguments: category);
   }
 }

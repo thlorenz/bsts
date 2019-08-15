@@ -1,6 +1,5 @@
 import 'package:bsts/core/interfaces.dart';
 import 'package:bsts/db/database.dart';
-import 'package:bsts/managers/checkpoints_manager/checkpoint_mocks.dart';
 import 'package:bsts/models/checkpoint.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -43,16 +42,16 @@ class CheckpointsManager implements ICheckpointsManager {
   }
 
   @override
-  Future<void> addCheckpoint(Checkpoint checkpoint) {
-    // TODO: implement addCheckpoint
-    return null;
+  Future<void> addCheckpoint(Checkpoint checkpoint) async {
+    await database.upsertCheckpoint(checkpoint);
+    _checkpoints[checkpoint.id] = checkpoint;
+    _notify(checkpoint.id);
   }
 
   @override
   Future<void> init() async {
-    // _checkpoints = await database.getAll();
     _checkpoints = Map<String, Checkpoint>.fromIterable(
-      CheckpointMocks.allCheckpoints,
+      await database.getCheckpoints(),
       key: (dynamic x) => (x as Checkpoint).id,
     );
   }

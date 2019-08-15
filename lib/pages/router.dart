@@ -1,3 +1,5 @@
+import 'package:bsts/bloc/add_checkpoint/checkpoints.dart';
+import 'package:bsts/pages/add_checkpoint_page/add_checkpoint_page.dart';
 import 'package:bsts/pages/home_page/home_page.dart';
 import 'package:bsts/pages/select_category_page/select_category_page.dart';
 import 'package:flutter/material.dart';
@@ -22,8 +24,14 @@ class Router {
           settings: settings,
         );
       case Routes.CHECKPOINT_ADD:
-        // TODO:
-        return null;
+        final category = settings.arguments as Category;
+        return MaterialPageRoute<void>(
+          builder: (_) => AddCheckpointPage(
+            category: category.label,
+            checkpoints: category.checkpoints,
+          ),
+          settings: settings,
+        );
       default:
         return MaterialPageRoute<Scaffold>(
             builder: (_) => Scaffold(
