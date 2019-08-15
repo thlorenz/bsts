@@ -3,6 +3,7 @@ import 'package:bsts/core_ui/snackbar.dart';
 import 'package:bsts/models/checkpoint.dart';
 import 'package:bsts/packages/se_bloc/factories.dart';
 import 'package:bsts/pages/add_checkpoint_page/add_checkpoint_view.dart';
+import 'package:bsts/widgets/modify_view_decorator.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:meta/meta.dart';
@@ -24,13 +25,17 @@ class AddCheckpointPage extends StatelessWidget {
           centerTitle: true,
           title: Text('Add $category Checkpoint'),
         ),
-        body: _buildAddCheckpointView(context),
+        body: ModifyViewDecorator(child: _buildAddCheckpointView(context)),
         bottomNavigationBar: BottomNavigationBar(
           onTap: (idx) => _onNavigationItemSelected(context, idx),
           items: [
             BottomNavigationBarItem(
               icon: Icon(Icons.home),
               title: Text('Home'),
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(FontAwesomeIcons.table),
+              title: Text('Categories'),
             ),
             BottomNavigationBarItem(
               icon: Icon(
@@ -62,7 +67,8 @@ class AddCheckpointPage extends StatelessWidget {
 
   void _onNavigationItemSelected(BuildContext context, int idx) {
     if (idx == 0) Navigator.of(context)..pop()..pop();
-    if (idx == 1) print('TODO: help');
+    if (idx == 1) Navigator.of(context).pop();
+    if (idx == 2) print('TODO: help');
   }
 
   Widget _buildAddCheckpointView(BuildContext context) =>

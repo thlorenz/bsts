@@ -1,5 +1,6 @@
 import 'package:bsts/bloc/add_checkpoint/checkpoints.dart';
 import 'package:bsts/pages/router.dart';
+import 'package:bsts/widgets/modify_view_decorator.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -12,7 +13,7 @@ class SelectCategoryPage extends StatelessWidget {
           centerTitle: true,
           title: Text('Select Checkpoint Category'),
         ),
-        body: _SelectCategoryView(),
+        body: ModifyViewDecorator(child: _SelectCategoryView()),
         bottomNavigationBar: BottomNavigationBar(
           onTap: (idx) => _onNavigationItemSelected(context, idx),
           items: [
@@ -86,7 +87,7 @@ class _SelectCategoryItem extends StatelessWidget {
           ),
           child: Center(
             child: Padding(
-              padding: const EdgeInsets.only(top: 18),
+              padding: const EdgeInsets.only(top: 18, left: 10),
               child: Icon(
                 category.icon,
                 color: category.color,

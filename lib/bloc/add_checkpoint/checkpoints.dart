@@ -36,18 +36,20 @@ Iterable<Checkpoint> get _house sync* {
   yield _c('Heater', FontAwesomeIcons.temperatureHigh, Colors.red);
   yield _c('Fan', FontAwesomeIcons.fan, Colors.grey);
   yield _c('Light', FontAwesomeIcons.lightbulb, Colors.yellowAccent);
-  yield _c('Curtains', FontAwesomeIcons.personBooth, Colors.grey);
   yield _c('TV', FontAwesomeIcons.tv, Colors.grey);
   yield _c('Clock', FontAwesomeIcons.clock, Colors.brown);
   yield _c('Wifi', FontAwesomeIcons.wifi, Colors.white);
+  yield _c('Curtains', FontAwesomeIcons.personBooth, Colors.grey);
+  yield _c('Window', FontAwesomeIcons.building, Colors.lightBlueAccent);
+  yield _c('Door', FontAwesomeIcons.doorOpen, Colors.brown);
   yield _c('Gate', FontAwesomeIcons.toriiGate, Colors.brown);
   yield _c('Garage Door', FontAwesomeIcons.warehouse, Colors.grey);
-  yield _c('Water Plants', FontAwesomeIcons.seedling, Colors.green);
+  yield _c('Plants', FontAwesomeIcons.seedling, Colors.green);
   yield _c('Car', FontAwesomeIcons.warehouse, Colors.blueGrey);
   yield _c('Motorcycle', FontAwesomeIcons.motorcycle, Colors.blueGrey);
   yield _c('Bicycle', FontAwesomeIcons.biking, Colors.blueGrey);
   yield _c('Dumpster', FontAwesomeIcons.dumpster, Colors.grey);
-  yield _c('Take out Trash', FontAwesomeIcons.trashAlt, Colors.grey);
+  yield _c('Trash', FontAwesomeIcons.trashAlt, Colors.grey);
 }
 
 Iterable<Checkpoint> get _pets sync* {
@@ -69,7 +71,9 @@ Iterable<Checkpoint> get _things sync* {
   yield _c('First Aid', FontAwesomeIcons.firstAid, Colors.red);
   yield _c('Camera', FontAwesomeIcons.camera, Colors.black);
   yield _c('Phone', FontAwesomeIcons.mobileAlt, Colors.black);
-  yield _c('Laptop', FontAwesomeIcons.laptop, Colors.grey);
+  yield _c('Laptop', FontAwesomeIcons.laptop, Colors.blue);
+  yield _c('Computer', FontAwesomeIcons.desktop, Colors.grey);
+  yield _c('Printer', FontAwesomeIcons.print, Colors.white);
   yield _c('Headphones', FontAwesomeIcons.headphones, Colors.black);
   yield _c('Tools', FontAwesomeIcons.tools, Colors.grey);
   yield _c('Book', FontAwesomeIcons.book, Colors.brown);

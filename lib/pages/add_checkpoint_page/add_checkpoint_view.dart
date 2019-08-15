@@ -40,7 +40,7 @@ class _AddCheckpointItem extends StatelessWidget {
     return CheckpointWidget(
       checkpoint: checkpoint,
       labelFontSize: 20,
-      iconSize: 60,
+      iconSize: 50,
       iconTopPadding: 46,
       borderSide: BorderSide(width: 2, color: Colors.white24),
       onTap: () => bloc.addCheckpoint(checkpoint),
