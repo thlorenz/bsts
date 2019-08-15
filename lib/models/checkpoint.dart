@@ -29,6 +29,7 @@ class Checkpoint extends Equatable {
   final DateTime lastCheck;
 
   Checkpoint copyWith(
+    String id,
     int iconCodePoint,
     String iconFontPackage,
     String iconFontFamily,
@@ -36,7 +37,7 @@ class Checkpoint extends Equatable {
     String label,
   ) {
     return Checkpoint(
-      id: id,
+      id: id ?? this.id,
       iconCodePoint: iconCodePoint ?? this.iconCodePoint,
       iconFontPackage: iconFontPackage ?? this.iconFontPackage,
       iconFontFamily: iconFontFamily ?? this.iconFontFamily,

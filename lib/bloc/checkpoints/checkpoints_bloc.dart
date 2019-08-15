@@ -45,10 +45,6 @@ class CheckpointsBloc extends BlocBase<CheckpointsState, CheckpointsEvent> {
     checkpointsManager.resetAll();
   }
 
-  void add() {
-    _log.info('adding');
-  }
-
   void toggleUnverified() {
     final filteringUnverified = !currentState.filteringUnverified;
     state(CheckpointsState.filterChanged(

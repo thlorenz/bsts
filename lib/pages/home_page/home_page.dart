@@ -1,6 +1,7 @@
 import 'package:bsts/bloc/checkpoints/checkpoints_bloc.dart';
 import 'package:bsts/packages/se_bloc/factories.dart';
 import 'package:bsts/pages/home_page/checkpoints_view.dart';
+import 'package:bsts/pages/router.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -40,6 +41,7 @@ class _HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bloc = Provider.of<CheckpointsBloc>(context);
     final filter = state.filteringUnverified
         ? BottomNavigationBarItem(
             icon: Icon(Icons.list),
@@ -58,10 +60,6 @@ class _HomePage extends StatelessWidget {
       bottomNavigationBar: BottomNavigationBar(
         onTap: (idx) => _onNavigationItemSelected(context, idx),
         items: [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.redo),
-            title: Text('redo'),
-          ),
           filter,
           BottomNavigationBarItem(
             icon: Icon(Icons.add),
@@ -69,14 +67,22 @@ class _HomePage extends StatelessWidget {
           ),
         ],
       ),
+      floatingActionButton: FloatingActionButton(
+        mini: true,
+        onPressed: bloc.reset,
+        child: Icon(Icons.redo),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 
   void _onNavigationItemSelected(BuildContext context, int idx) {
     final bloc = Provider.of<CheckpointsBloc>(context);
 
-    if (idx == 0) return bloc.reset();
-    if (idx == 1) return bloc.toggleUnverified();
-    if (idx == 2) return bloc.add();
+    if (idx == 0) return bloc.toggleUnverified();
+    if (idx == 1) {
+      Navigator.of(context).pushNamed(Routes.CATEGORY_SELECT);
+      return;
+    }
   }
 }
