@@ -2,7 +2,9 @@ import 'dart:io';
 
 import 'package:bsts/core/interfaces.dart';
 import 'package:bsts/core/log.dart';
-import 'package:bsts/db/table.dart';
+import 'package:bsts/core/tuple.dart';
+import 'package:bsts/db/checkpoint_table.dart';
+import 'package:bsts/db/metadata_table.dart';
 import 'package:bsts/models/checkpoint.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -15,6 +17,9 @@ abstract class IDatabase implements IDisposable {
   Future<List<Checkpoint>> getCheckpoints();
   Future<void> upsertCheckpoint(Checkpoint checkpoint);
   Future<int> deleteCheckpoint(String id);
+
+  Future<void> upsertOrderedCheckpointIDs(List<String> checkpointIDs);
+  Future<List<String>> getOrderedCheckpointIDs();
 }
 
 class BstsDatabase implements IDatabase {
@@ -28,7 +33,6 @@ class BstsDatabase implements IDatabase {
     _db = await openDatabase(
       databasePath,
       version: DATABASE_VERSION,
-      onConfigure: _ondatabaseConfigure,
       onCreate: _ondatabaseCreate,
     );
   }
@@ -68,12 +72,30 @@ class BstsDatabase implements IDatabase {
     );
   }
 
-  Future<void> _ondatabaseConfigure(Database db) {
-    return db.execute('PRAGMA foreign_keys = ON');
+  Future<void> upsertOrderedCheckpointIDs(List<String> checkpointIDs) async {
+    _log.finer(() => 'Inserting $checkpointIDs');
+    return _db.insert(
+      MetadataTable.table,
+      MetadataTable.listRow(Tuple(MetadataTable.key, checkpointIDs)),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+  Future<List<String>> getOrderedCheckpointIDs() async {
+    final checkpointIDsRows = await _db.query(
+      MetadataTable.table,
+      columns: MetadataTable.columns,
+    );
+    if (checkpointIDsRows.isEmpty) return [];
+    final tuple = MetadataTable.listFromRow(checkpointIDsRows.first);
+    return tuple.second;
   }
 
   Future<void> _ondatabaseCreate(Database db, int version) async {
-    return CheckpointTable.create(db);
+    return Future.wait([
+      CheckpointTable.create(db),
+      MetadataTable.create(db),
+    ]);
   }
 
   void dispose() {

@@ -46,6 +46,18 @@ class CheckpointBloc extends BlocBase<CheckpointState, CheckpointEvent> {
     checkpointsManager.verifyCheckpoint(currentState.checkpoint.id);
   }
 
+  void swipeRight() {
+    const direction = ReorderDirection.forward;
+    if (!checkpointsManager.canReorder(id, direction)) return;
+    checkpointsManager.reorder(id, direction);
+  }
+
+  void swipeLeft() {
+    const direction = ReorderDirection.backward;
+    if (!checkpointsManager.canReorder(id, direction)) return;
+    checkpointsManager.reorder(id, direction);
+  }
+
   void _onCheckpointChanged(String id) {
     assert(id == this.id);
     state(CheckpointState.changed(currentState, checkpointsManager.byID(id)));

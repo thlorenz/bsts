@@ -3,6 +3,8 @@ import 'package:bsts/db/database.dart';
 import 'package:bsts/models/checkpoint.dart';
 import 'package:rxdart/rxdart.dart';
 
+enum ReorderDirection { backward, forward }
+
 abstract class ICheckpointsManager implements IDisposable {
   Future<void> addCheckpoint(Checkpoint checkpoint);
   Future<void> removeCheckpoint(String id);
@@ -10,6 +12,8 @@ abstract class ICheckpointsManager implements IDisposable {
   Future<void> verifyCheckpoint(String id);
 
   Future<void> resetAll();
+  Future<void> reorder(String id, ReorderDirection direction, {int step});
+  bool canReorder(String id, ReorderDirection direction, {int step});
 
   Future<void> init();
 
@@ -32,9 +36,12 @@ class CheckpointsManager implements ICheckpointsManager {
   final Subject<String> _checkpointChanged$ = PublishSubject<String>();
   Observable<String> get checkpointChanged$ => _checkpointChanged$;
 
+  List<String> _orderedIDs;
+
   @override
-  List<Checkpoint> get checkpoints =>
-      _checkpoints.values.toList(); // TODO: sort by order table
+  List<Checkpoint> get checkpoints => _checkpoints.values.toList()
+    ..sort((a, b) =>
+        _orderedIDs.indexOf(a.id).compareTo(_orderedIDs.indexOf(b.id)));
 
   Checkpoint byID(String id) {
     assert(_checkpoints.containsKey(id));
@@ -54,6 +61,68 @@ class CheckpointsManager implements ICheckpointsManager {
       await database.getCheckpoints(),
       key: (dynamic x) => (x as Checkpoint).id,
     );
+    _orderedIDs = await database.getOrderedCheckpointIDs();
+    if (_syncOrderedIDs()) {
+      await database.upsertOrderedCheckpointIDs(_orderedIDs);
+    }
+  }
+
+  bool _syncOrderedIDs() {
+    // Remove ids that no longer have a checkpoint
+    _orderedIDs =
+        _orderedIDs.where((id) => _checkpoints.containsKey(id)).toList();
+    if (_orderedIDs.length == _checkpoints.length) return false;
+
+    // Add checkpoint ids not yet inside ordered list
+    for (final id in _checkpoints.keys) {
+      if (_orderedIDs.contains(id)) continue;
+      _orderedIDs.add(id);
+    }
+    return true;
+  }
+
+  bool canReorder(String id, ReorderDirection direction, {int step = 1}) {
+    final idx = _orderedIDs.indexOf(id);
+    switch (direction) {
+      case ReorderDirection.backward:
+        return idx > step;
+      case ReorderDirection.forward:
+        return idx + step < _orderedIDs.length;
+      default:
+        throw ArgumentError('Invalid direction: $direction');
+    }
+  }
+
+  Future<void> reorder(String id, ReorderDirection direction,
+      {int step = 1}) async {
+    final idx = _orderedIDs.indexOf(id);
+    assert(idx >= 0, '$id not in $_orderedIDs');
+
+    switch (direction) {
+      case ReorderDirection.backward:
+        _reorderBackward(id, idx);
+        break;
+      case ReorderDirection.forward:
+        _reorderForward(id, idx);
+        break;
+    }
+
+    await database.upsertOrderedCheckpointIDs(_orderedIDs);
+    _notifyAll();
+  }
+
+  void _reorderBackward(String id, int idx) {
+    assert(idx > 0, 'cannot move first item back');
+    final idBefore = _orderedIDs[idx - 1];
+    _orderedIDs[idx] = idBefore;
+    _orderedIDs[idx - 1] = id;
+  }
+
+  void _reorderForward(String id, int idx) {
+    assert(idx < _orderedIDs.length, 'cannot move last item forward');
+    final idAfter = _orderedIDs[idx + 1];
+    _orderedIDs[idx] = idAfter;
+    _orderedIDs[idx + 1] = id;
   }
 
   @override
