@@ -7,10 +7,11 @@ enum CheckpointStage {
   initialized,
   changed,
   tick,
+  editToggled,
 }
 
 String _lastCheck(Checkpoint checkpoint) {
-  return checkpoint.lastCheck != null
+  return checkpoint?.lastCheck != null
       ? timeago.format(checkpoint.lastCheck)
       : null;
 }
@@ -21,50 +22,63 @@ class CheckpointState extends Equatable {
     @required this.stage,
     @required this.checkpoint,
     @required this.lastCheck,
-  }) : super(<dynamic>[stage, checkpoint, lastCheck]);
+    @required this.editing,
+  }) : super(<dynamic>[stage, checkpoint, lastCheck, editing]);
 
   factory CheckpointState.initial(Checkpoint checkpoint) {
     return CheckpointState(
       stage: CheckpointStage.initialized,
       checkpoint: checkpoint,
       lastCheck: _lastCheck(checkpoint),
+      editing: false,
     );
   }
 
   factory CheckpointState.changed(
-    CheckpointState current,
+    CheckpointState currentState,
     Checkpoint checkpoint,
   ) {
-    return current.copyWith(
+    return currentState.copyWith(
       stage: CheckpointStage.changed,
       checkpoint: checkpoint,
     );
   }
 
   factory CheckpointState.tick(
-    CheckpointState current,
+    CheckpointState currentState,
     Checkpoint checkpoint,
   ) {
-    return current.copyWith(
+    return currentState.copyWith(
       stage: CheckpointStage.tick,
       checkpoint: checkpoint,
+    );
+  }
+
+  factory CheckpointState.editToggled(
+      CheckpointState currentState, bool editing) {
+    return currentState.copyWith(
+      stage: CheckpointStage.editToggled,
+      editing: editing,
     );
   }
 
   CheckpointState copyWith({
     CheckpointStage stage,
     Checkpoint checkpoint,
+    bool editing,
   }) {
     return CheckpointState(
       stage: stage ?? this.stage,
       checkpoint: checkpoint ?? this.checkpoint,
       lastCheck: _lastCheck(checkpoint),
+      editing: editing ?? this.editing,
     );
   }
 
   final CheckpointStage stage;
   final Checkpoint checkpoint;
   final String lastCheck;
+  final bool editing;
 
   bool get checked => lastCheck != null;
 
@@ -73,6 +87,7 @@ class CheckpointState extends Equatable {
       stage: $stage,
       lastCheck: $lastCheck,
       checkpoint: $checkpoint
+      editing: $editing,
    }''';
   }
 }

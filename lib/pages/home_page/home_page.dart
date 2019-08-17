@@ -42,7 +42,7 @@ class _HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bloc = Provider.of<CheckpointsBloc>(context);
-    final filter = state.filteringUnverified
+    final filterItem = state.filteringUnverified
         ? BottomNavigationBarItem(
             icon: Icon(Icons.list),
             title: Text('all'),
@@ -50,6 +50,15 @@ class _HomePage extends StatelessWidget {
         : BottomNavigationBarItem(
             icon: Icon(Icons.filter_list),
             title: Text('filter'),
+          );
+    final toggleEditItem = state.editing
+        ? BottomNavigationBarItem(
+            icon: Icon(Icons.done),
+            title: Text('done'),
+          )
+        : BottomNavigationBarItem(
+            icon: Icon(Icons.edit),
+            title: Text('edit'),
           );
     return Scaffold(
       appBar: AppBar(
@@ -60,11 +69,12 @@ class _HomePage extends StatelessWidget {
       bottomNavigationBar: BottomNavigationBar(
         onTap: (idx) => _onNavigationItemSelected(context, idx),
         items: [
-          filter,
+          filterItem,
           BottomNavigationBarItem(
             icon: Icon(Icons.add),
             title: Text('add'),
           ),
+          toggleEditItem,
         ],
       ),
       floatingActionButton: FloatingActionButton(
@@ -84,5 +94,6 @@ class _HomePage extends StatelessWidget {
       Navigator.of(context).pushNamed(Routes.CATEGORY_SELECT);
       return;
     }
+    if (idx == 2) return bloc.toggleEditMode();
   }
 }

@@ -6,6 +6,7 @@ enum CheckpointsStage {
   initialized,
   changed,
   filterChanged,
+  editToggled,
 }
 
 @immutable
@@ -14,7 +15,8 @@ class CheckpointsState extends Equatable {
     @required this.stage,
     @required this.checkpoints,
     @required this.filteringUnverified,
-  }) : super(<dynamic>[stage, checkpoints, filteringUnverified]);
+    @required this.editing,
+  }) : super(<dynamic>[stage, checkpoints, filteringUnverified, editing]);
 
   factory CheckpointsState.initial(
       List<Checkpoint> checkpoints, bool filteringUnverified) {
@@ -22,6 +24,7 @@ class CheckpointsState extends Equatable {
       stage: CheckpointsStage.initialized,
       checkpoints: checkpoints,
       filteringUnverified: filteringUnverified,
+      editing: false,
     );
   }
 
@@ -47,26 +50,38 @@ class CheckpointsState extends Equatable {
     );
   }
 
+  factory CheckpointsState.editToggled(
+      CheckpointsState currentState, bool editing) {
+    return currentState.copyWith(
+      stage: CheckpointsStage.editToggled,
+      editing: editing,
+    );
+  }
   CheckpointsState copyWith({
     CheckpointsStage stage,
     List<Checkpoint> checkpoints,
     bool filteringUnverified,
+    bool editing,
   }) {
     return CheckpointsState(
       stage: stage ?? this.stage,
       checkpoints: checkpoints ?? this.checkpoints,
       filteringUnverified: filteringUnverified ?? this.filteringUnverified,
+      editing: editing ?? this.editing,
     );
   }
 
   final List<Checkpoint> checkpoints;
   final CheckpointsStage stage;
   final bool filteringUnverified;
+  final bool editing;
 
   String toString() {
     return '''CheckpointsState { 
       stage: $stage,
       checkpoints: $checkpoints
+      filteringUnverified: $filteringUnverified
+      editing: $editing,
     }''';
   }
 }

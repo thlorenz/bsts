@@ -21,23 +21,16 @@ class CheckpointView extends StatelessWidget {
   Widget build(BuildContext context) {
     final bloc = Provider.of<CheckpointBloc>(context);
     final checkpoint = state.checkpoint;
-    final checkpointWidget = CheckpointWidget(
+    final onTap = state.editing ? null : bloc.verify;
+    return CheckpointWidget(
       checkpoint: checkpoint,
-      onTap: bloc.verify,
+      onTap: onTap,
       checked: state.checked,
       lastCheck: state.lastCheck,
-    );
-    return Draggable<String>(
-      data: checkpoint.id,
-      maxSimultaneousDrags: 1,
-      child:
-          Opacity(opacity: state.checked ? 0.6 : 1.0, child: checkpointWidget),
-      feedback: Container(
-        width: 200,
-        height: 200,
-        child: CheckpointWidget(checkpoint: checkpoint),
-      ),
-      childWhenDragging: null,
+      editing: state.editing,
+      onMoveForward: bloc.moveForward,
+      onMoveBackward: bloc.moveBackward,
+      onDelete: bloc.delete,
     );
   }
 }

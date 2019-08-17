@@ -15,13 +15,17 @@ abstract class ICheckpointsManager implements IDisposable {
   Future<void> reorder(String id, ReorderDirection direction, {int step});
   bool canReorder(String id, ReorderDirection direction, {int step});
 
+  void toggleEditMode();
+
   Future<void> init();
 
   List<Checkpoint> get checkpoints;
   Observable<void> get checkpointsChanged$;
   Observable<String> get checkpointChanged$;
+  Observable<bool> get editModeToggled$;
 
   Checkpoint byID(String id);
+  bool hasID(String id);
 }
 
 class CheckpointsManager implements ICheckpointsManager {
@@ -36,6 +40,10 @@ class CheckpointsManager implements ICheckpointsManager {
   final Subject<String> _checkpointChanged$ = PublishSubject<String>();
   Observable<String> get checkpointChanged$ => _checkpointChanged$;
 
+  final BehaviorSubject<bool> _editModeToggled$ =
+      BehaviorSubject<bool>.seeded(false);
+  Observable<bool> get editModeToggled$ => _editModeToggled$;
+
   List<String> _orderedIDs;
 
   @override
@@ -48,11 +56,18 @@ class CheckpointsManager implements ICheckpointsManager {
     return _checkpoints[id];
   }
 
+  bool hasID(String id) {
+    return _checkpoints.containsKey(id);
+  }
+
   @override
   Future<void> addCheckpoint(Checkpoint checkpoint) async {
-    await database.upsertCheckpoint(checkpoint);
     _checkpoints[checkpoint.id] = checkpoint;
+    _orderedIDs.add(checkpoint.id);
+    await database.upsertCheckpoint(checkpoint);
+    await database.upsertOrderedCheckpointIDs(_orderedIDs);
     _notify(checkpoint.id);
+    _notifyAll();
   }
 
   @override
@@ -65,6 +80,11 @@ class CheckpointsManager implements ICheckpointsManager {
     if (_syncOrderedIDs()) {
       await database.upsertOrderedCheckpointIDs(_orderedIDs);
     }
+  }
+
+  void toggleEditMode() {
+    final mode = !_editModeToggled$.value;
+    _editModeToggled$.add(mode);
   }
 
   bool _syncOrderedIDs() {
@@ -85,7 +105,7 @@ class CheckpointsManager implements ICheckpointsManager {
     final idx = _orderedIDs.indexOf(id);
     switch (direction) {
       case ReorderDirection.backward:
-        return idx > step;
+        return idx >= step;
       case ReorderDirection.forward:
         return idx + step < _orderedIDs.length;
       default:
@@ -126,9 +146,17 @@ class CheckpointsManager implements ICheckpointsManager {
   }
 
   @override
-  Future<void> removeCheckpoint(String id) {
-    // TODO: implement removeCheckpoint
-    return null;
+  Future<void> removeCheckpoint(String id) async {
+    assert(
+      _checkpoints.containsKey(id),
+      'cannot remove non-existing checkpoint',
+    );
+    _checkpoints.remove(id);
+    _orderedIDs.remove(id);
+
+    await database.deleteCheckpoint(id);
+    await database.upsertOrderedCheckpointIDs(_orderedIDs);
+    _notifyAll();
   }
 
   Future<void> _unverify(Checkpoint checkpoint) async {
@@ -167,5 +195,6 @@ class CheckpointsManager implements ICheckpointsManager {
   void dispose() {
     _checkpointsChanged$?.close();
     _checkpointChanged$?.close();
+    _editModeToggled$?.close();
   }
 }

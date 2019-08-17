@@ -32,6 +32,9 @@ class CheckpointBloc extends BlocBase<CheckpointState, CheckpointEvent> {
         .where((id) => id == this.id)
         .listen(_onCheckpointChanged);
 
+    _editModeToggledSub =
+        checkpointsManager.editModeToggled$.listen(_onEditModeToggled);
+
     timer.periodic(Duration(minutes: 1), _onTick);
   }
 
@@ -40,40 +43,57 @@ class CheckpointBloc extends BlocBase<CheckpointState, CheckpointEvent> {
   final String id;
 
   StreamSubscription<String> _checkpointChangedSub;
+  StreamSubscription<bool> _editModeToggledSub;
   void Function() cancelTick;
 
   void verify() {
     checkpointsManager.verifyCheckpoint(currentState.checkpoint.id);
   }
 
-  void swipeRight() {
+  void moveForward() {
+    assert(currentState.editing, 'can only checkpoint when editing');
     const direction = ReorderDirection.forward;
     if (!checkpointsManager.canReorder(id, direction)) return;
     checkpointsManager.reorder(id, direction);
   }
 
-  void swipeLeft() {
+  void moveBackward() {
+    assert(currentState.editing, 'can only checkpoint when editing');
     const direction = ReorderDirection.backward;
     if (!checkpointsManager.canReorder(id, direction)) return;
     checkpointsManager.reorder(id, direction);
   }
 
+  void delete() {
+    checkpointsManager.removeCheckpoint(id);
+  }
+
   void _onCheckpointChanged(String id) {
     assert(id == this.id);
-    state(CheckpointState.changed(currentState, checkpointsManager.byID(id)));
+    if (checkpointsManager.hasID(id)) {
+      state(CheckpointState.changed(currentState, checkpointsManager.byID(id)));
+    } else {
+      // event() TODO: show removed event
+    }
   }
 
   void _onTick(dart_async.Timer timer) {
     cancelTick = timer.cancel;
     if (currentState.checkpoint.lastCheck == null) return;
+    if (!checkpointsManager.hasID(id)) return;
     state(CheckpointState.tick(currentState, checkpointsManager.byID(id)));
+  }
+
+  void _onEditModeToggled(bool editing) {
+    state(CheckpointState.editToggled(currentState, editing));
   }
 
   @override
   void dispose() {
     _log.finest(() => 'disposing $id');
     if (cancelTick != null) cancelTick();
-    _checkpointChangedSub.cancel();
+    _checkpointChangedSub?.cancel();
+    _editModeToggledSub?.cancel();
     super.dispose();
   }
 }
