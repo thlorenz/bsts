@@ -13,6 +13,7 @@ abstract class ICheckpointsManager implements IDisposable {
 
   Future<void> resetAll();
   Future<void> reorder(int oldIdx, int newIdx);
+  Future<void> updateLabel(String id, String label);
 
   Future<void> init();
 
@@ -94,6 +95,15 @@ class CheckpointsManager implements ICheckpointsManager {
     _orderedIDs.insert(tgtIdx, id);
     _notifyAll();
     await database.upsertOrderedCheckpointIDs(_orderedIDs);
+  }
+
+  Future<void> updateLabel(String id, String label) async {
+    assert(_checkpoints.containsKey(id), 'not found $id');
+    final cp = _checkpoints[id].copyWith(label: label);
+    _checkpoints[id] = cp;
+    _notifyAll();
+    _notify(id);
+    await database.upsertCheckpoint(cp);
   }
 
   @override

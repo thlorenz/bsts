@@ -41,6 +41,10 @@ class EditCheckpointsBloc
     checkpointsManager.reorder(oldIdx, newIdx);
   }
 
+  void updateLabel(String id, String label) {
+    checkpointsManager.updateLabel(id, label);
+  }
+
   void _onCheckpointsChanged(void _) {
     state(
       EditCheckpointsState.changed(
