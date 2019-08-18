@@ -57,35 +57,31 @@ class _HomePage extends StatelessWidget {
       title: Text('edit'),
     );
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: Text('Better Safe Than Sorry'),
-      ),
-      body: CheckpointsView(state: state),
-      bottomNavigationBar: BottomNavigationBar(
-        onTap: (idx) => _onNavigationItemSelected(context, idx),
-        items: [
-          filterItem,
-          BottomNavigationBarItem(
-            icon: Icon(Icons.add),
-            title: Text('add'),
-          ),
-          toggleEditItem,
-          BottomNavigationBarItem(
-            icon: Icon(
-              FontAwesomeIcons.question,
+        appBar: AppBar(
+          centerTitle: true,
+          title: Text('Better Safe Than Sorry'),
+        ),
+        body: CheckpointsView(state: state),
+        bottomNavigationBar: BottomNavigationBar(
+          onTap: (idx) => _onNavigationItemSelected(context, idx),
+          items: [
+            filterItem,
+            BottomNavigationBarItem(
+              icon: Icon(Icons.add),
+              title: Text('add'),
             ),
-            title: Text('Help'),
-          ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        mini: true,
-        onPressed: bloc.reset,
-        child: Icon(Icons.redo),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-    );
+            toggleEditItem,
+            BottomNavigationBarItem(
+              icon: Icon(FontAwesomeIcons.question),
+              title: Text('Help'),
+            ),
+          ],
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: bloc.reset,
+          child: Icon(Icons.redo),
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat);
   }
 
   void _onNavigationItemSelected(BuildContext context, int idx) {

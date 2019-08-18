@@ -45,6 +45,10 @@ class EditCheckpointsBloc
     checkpointsManager.updateLabel(id, label);
   }
 
+  void remove(String id) {
+    checkpointsManager.removeCheckpoint(id);
+  }
+
   void _onCheckpointsChanged(void _) {
     state(
       EditCheckpointsState.changed(

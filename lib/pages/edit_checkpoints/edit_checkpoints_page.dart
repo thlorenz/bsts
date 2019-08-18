@@ -3,6 +3,7 @@ import 'package:bsts/bloc/edit_checkpoints/edit_checkpoints_bloc.ui.dart';
 import 'package:bsts/packages/se_bloc/factories.dart';
 import 'package:bsts/pages/edit_checkpoints/edit_checkpoints_view.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class EditCheckpointsPage extends StatelessWidget {
   @override
@@ -36,6 +37,26 @@ class _EditCheckpointsPage extends StatelessWidget {
         title: Text('Edit Checkpoints'),
       ),
       body: EditCheckpointsView(state: state),
+      bottomNavigationBar: BottomNavigationBar(
+        onTap: (idx) => _onNavigationItemSelected(context, idx),
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            title: Text('Home'),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(
+              FontAwesomeIcons.question,
+            ),
+            title: Text('Help'),
+          ),
+        ],
+      ),
     );
+  }
+
+  void _onNavigationItemSelected(BuildContext context, int idx) {
+    if (idx == 0) Navigator.of(context).pop();
+    if (idx == 1) print('TODO: help');
   }
 }
