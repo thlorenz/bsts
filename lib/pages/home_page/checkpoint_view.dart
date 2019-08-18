@@ -25,6 +25,7 @@ class CheckpointView extends StatelessWidget {
       onTap: bloc.verify,
       checked: state.checked,
       lastCheck: state.lastCheck,
+      iconTopPadding: 30,
     );
   }
 }

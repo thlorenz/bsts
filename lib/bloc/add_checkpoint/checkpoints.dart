@@ -18,6 +18,7 @@ Checkpoint _c(String label, IconData icon, Color iconColor) {
 
 Iterable<Checkpoint> get _kitchen sync* {
   yield _c('Oven', Icons.kitchen, Colors.brown);
+  yield _c('Fridge', FontAwesomeIcons.snowflake, Colors.white);
   yield _c('Sink', FontAwesomeIcons.water, Colors.blue);
   yield _c('Gas', FontAwesomeIcons.fireAlt, Colors.blue);
   yield _c('Coffemaker', FontAwesomeIcons.coffee, Colors.black);
