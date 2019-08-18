@@ -31,10 +31,6 @@ class CheckpointBloc extends BlocBase<CheckpointState, CheckpointEvent> {
     _checkpointChangedSub = checkpointsManager.checkpointChanged$
         .where((id) => id == this.id)
         .listen(_onCheckpointChanged);
-
-    _editModeToggledSub =
-        checkpointsManager.editModeToggled$.listen(_onEditModeToggled);
-
     timer.periodic(Duration(minutes: 1), _onTick);
   }
 
@@ -43,25 +39,10 @@ class CheckpointBloc extends BlocBase<CheckpointState, CheckpointEvent> {
   final String id;
 
   StreamSubscription<String> _checkpointChangedSub;
-  StreamSubscription<bool> _editModeToggledSub;
   void Function() cancelTick;
 
   void verify() {
     checkpointsManager.verifyCheckpoint(currentState.checkpoint.id);
-  }
-
-  void moveForward() {
-    assert(currentState.editing, 'can only checkpoint when editing');
-    const direction = ReorderDirection.forward;
-    if (!checkpointsManager.canReorder(id, direction)) return;
-    checkpointsManager.reorder(id, direction);
-  }
-
-  void moveBackward() {
-    assert(currentState.editing, 'can only checkpoint when editing');
-    const direction = ReorderDirection.backward;
-    if (!checkpointsManager.canReorder(id, direction)) return;
-    checkpointsManager.reorder(id, direction);
   }
 
   void delete() {
@@ -84,16 +65,11 @@ class CheckpointBloc extends BlocBase<CheckpointState, CheckpointEvent> {
     state(CheckpointState.tick(currentState, checkpointsManager.byID(id)));
   }
 
-  void _onEditModeToggled(bool editing) {
-    state(CheckpointState.editToggled(currentState, editing));
-  }
-
   @override
   void dispose() {
     _log.finest(() => 'disposing $id');
     if (cancelTick != null) cancelTick();
     _checkpointChangedSub?.cancel();
-    _editModeToggledSub?.cancel();
     super.dispose();
   }
 }

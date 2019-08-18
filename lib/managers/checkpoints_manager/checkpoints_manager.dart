@@ -12,17 +12,13 @@ abstract class ICheckpointsManager implements IDisposable {
   Future<void> verifyCheckpoint(String id);
 
   Future<void> resetAll();
-  Future<void> reorder(String id, ReorderDirection direction, {int step});
-  bool canReorder(String id, ReorderDirection direction, {int step});
-
-  void toggleEditMode();
+  Future<void> reorder(int oldIdx, int newIdx);
 
   Future<void> init();
 
   List<Checkpoint> get checkpoints;
   Observable<void> get checkpointsChanged$;
   Observable<String> get checkpointChanged$;
-  Observable<bool> get editModeToggled$;
 
   Checkpoint byID(String id);
   bool hasID(String id);
@@ -39,10 +35,6 @@ class CheckpointsManager implements ICheckpointsManager {
 
   final Subject<String> _checkpointChanged$ = PublishSubject<String>();
   Observable<String> get checkpointChanged$ => _checkpointChanged$;
-
-  final BehaviorSubject<bool> _editModeToggled$ =
-      BehaviorSubject<bool>.seeded(false);
-  Observable<bool> get editModeToggled$ => _editModeToggled$;
 
   List<String> _orderedIDs;
 
@@ -82,11 +74,6 @@ class CheckpointsManager implements ICheckpointsManager {
     }
   }
 
-  void toggleEditMode() {
-    final mode = !_editModeToggled$.value;
-    _editModeToggled$.add(mode);
-  }
-
   bool _syncOrderedIDs() {
     // Remove ids that no longer have a checkpoint
     _orderedIDs =
@@ -101,48 +88,12 @@ class CheckpointsManager implements ICheckpointsManager {
     return true;
   }
 
-  bool canReorder(String id, ReorderDirection direction, {int step = 1}) {
-    final idx = _orderedIDs.indexOf(id);
-    switch (direction) {
-      case ReorderDirection.backward:
-        return idx >= step;
-      case ReorderDirection.forward:
-        return idx + step < _orderedIDs.length;
-      default:
-        throw ArgumentError('Invalid direction: $direction');
-    }
-  }
-
-  Future<void> reorder(String id, ReorderDirection direction,
-      {int step = 1}) async {
-    final idx = _orderedIDs.indexOf(id);
-    assert(idx >= 0, '$id not in $_orderedIDs');
-
-    switch (direction) {
-      case ReorderDirection.backward:
-        _reorderBackward(id, idx);
-        break;
-      case ReorderDirection.forward:
-        _reorderForward(id, idx);
-        break;
-    }
-
-    await database.upsertOrderedCheckpointIDs(_orderedIDs);
+  Future<void> reorder(int oldIdx, int newIdx) async {
+    final int tgtIdx = newIdx > oldIdx ? newIdx - 1 : newIdx;
+    final id = _orderedIDs.removeAt(oldIdx);
+    _orderedIDs.insert(tgtIdx, id);
     _notifyAll();
-  }
-
-  void _reorderBackward(String id, int idx) {
-    assert(idx > 0, 'cannot move first item back');
-    final idBefore = _orderedIDs[idx - 1];
-    _orderedIDs[idx] = idBefore;
-    _orderedIDs[idx - 1] = id;
-  }
-
-  void _reorderForward(String id, int idx) {
-    assert(idx < _orderedIDs.length, 'cannot move last item forward');
-    final idAfter = _orderedIDs[idx + 1];
-    _orderedIDs[idx] = idAfter;
-    _orderedIDs[idx + 1] = id;
+    await database.upsertOrderedCheckpointIDs(_orderedIDs);
   }
 
   @override
@@ -154,16 +105,16 @@ class CheckpointsManager implements ICheckpointsManager {
     _checkpoints.remove(id);
     _orderedIDs.remove(id);
 
+    _notifyAll();
     await database.deleteCheckpoint(id);
     await database.upsertOrderedCheckpointIDs(_orderedIDs);
-    _notifyAll();
   }
 
   Future<void> _unverify(Checkpoint checkpoint) async {
     final cp = checkpoint.updateLastCheck(null);
-    await database.upsertCheckpoint(cp);
     _checkpoints[cp.id] = cp;
     _notify(cp.id);
+    await database.upsertCheckpoint(cp);
   }
 
   @override
@@ -171,9 +122,9 @@ class CheckpointsManager implements ICheckpointsManager {
     assert(_checkpoints.containsKey(id), 'checkpoint $id not found');
     final checkpoint = _checkpoints[id];
     final cp = checkpoint.updateLastCheck(DateTime.now());
-    await database.upsertCheckpoint(cp);
     _checkpoints[cp.id] = cp;
     _notify(cp.id);
+    await database.upsertCheckpoint(cp);
   }
 
   @override
@@ -195,6 +146,5 @@ class CheckpointsManager implements ICheckpointsManager {
   void dispose() {
     _checkpointsChanged$?.close();
     _checkpointChanged$?.close();
-    _editModeToggled$?.close();
   }
 }

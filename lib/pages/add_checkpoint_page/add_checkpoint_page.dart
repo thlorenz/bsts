@@ -38,9 +38,7 @@ class AddCheckpointPage extends StatelessWidget {
               title: Text('Categories'),
             ),
             BottomNavigationBarItem(
-              icon: Icon(
-                FontAwesomeIcons.question,
-              ),
+              icon: Icon(FontAwesomeIcons.question),
               title: Text('Help'),
             ),
           ],

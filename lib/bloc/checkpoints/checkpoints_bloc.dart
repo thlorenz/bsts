@@ -35,14 +35,10 @@ class CheckpointsBloc extends BlocBase<CheckpointsState, CheckpointsEvent> {
       checkpointsManager.checkpointsChanged$,
       checkpointsManager.checkpointChanged$.mapTo<void>(null),
     ]).listen(_onCheckpointsChanged);
-
-    _editModeToggledSub =
-        checkpointsManager.editModeToggled$.listen(_onEditModeToggled);
   }
 
   final ICheckpointsManager checkpointsManager;
   StreamSubscription<void> _checkpointsChangedSub;
-  StreamSubscription<bool> _editModeToggledSub;
 
   void reset() {
     _log.info('resetting');
@@ -58,16 +54,10 @@ class CheckpointsBloc extends BlocBase<CheckpointsState, CheckpointsEvent> {
     ));
   }
 
-  void Function() get toggleEditMode => checkpointsManager.toggleEditMode;
-
   void _onCheckpointsChanged(void _) {
     state(
       CheckpointsState.changed(currentState, _checkpoints()),
     );
-  }
-
-  void _onEditModeToggled(bool editing) {
-    state(CheckpointsState.editToggled(currentState, editing));
   }
 
   List<Checkpoint> _checkpoints([bool filteringUnverifiedParam]) {
@@ -83,7 +73,6 @@ class CheckpointsBloc extends BlocBase<CheckpointsState, CheckpointsEvent> {
   void dispose() {
     _log.finest(() => 'disposing');
     _checkpointsChangedSub?.cancel();
-    _editModeToggledSub?.cancel();
     super.dispose();
   }
 }

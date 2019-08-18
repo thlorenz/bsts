@@ -2,29 +2,26 @@ import 'package:bsts/models/checkpoint.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 
-enum CheckpointsStage {
+enum CheckpointsTrigger {
   initialized,
   changed,
   filterChanged,
-  editToggled,
 }
 
 @immutable
 class CheckpointsState extends Equatable {
   CheckpointsState({
-    @required this.stage,
+    @required this.trigger,
     @required this.checkpoints,
     @required this.filteringUnverified,
-    @required this.editing,
-  }) : super(<dynamic>[stage, checkpoints, filteringUnverified, editing]);
+  }) : super(<dynamic>[trigger, checkpoints, filteringUnverified]);
 
   factory CheckpointsState.initial(
       List<Checkpoint> checkpoints, bool filteringUnverified) {
     return CheckpointsState(
-      stage: CheckpointsStage.initialized,
+      trigger: CheckpointsTrigger.initialized,
       checkpoints: checkpoints,
       filteringUnverified: filteringUnverified,
-      editing: false,
     );
   }
 
@@ -33,7 +30,7 @@ class CheckpointsState extends Equatable {
     List<Checkpoint> checkpoints,
   ) {
     return current.copyWith(
-      stage: CheckpointsStage.changed,
+      trigger: CheckpointsTrigger.changed,
       checkpoints: checkpoints,
     );
   }
@@ -44,44 +41,33 @@ class CheckpointsState extends Equatable {
     bool filteringUnverified,
   ) {
     return current.copyWith(
-      stage: CheckpointsStage.filterChanged,
+      trigger: CheckpointsTrigger.filterChanged,
       checkpoints: checkpoints,
       filteringUnverified: filteringUnverified,
     );
   }
 
-  factory CheckpointsState.editToggled(
-      CheckpointsState currentState, bool editing) {
-    return currentState.copyWith(
-      stage: CheckpointsStage.editToggled,
-      editing: editing,
-    );
-  }
   CheckpointsState copyWith({
-    CheckpointsStage stage,
+    CheckpointsTrigger trigger,
     List<Checkpoint> checkpoints,
     bool filteringUnverified,
-    bool editing,
   }) {
     return CheckpointsState(
-      stage: stage ?? this.stage,
+      trigger: trigger ?? this.trigger,
       checkpoints: checkpoints ?? this.checkpoints,
       filteringUnverified: filteringUnverified ?? this.filteringUnverified,
-      editing: editing ?? this.editing,
     );
   }
 
   final List<Checkpoint> checkpoints;
-  final CheckpointsStage stage;
+  final CheckpointsTrigger trigger;
   final bool filteringUnverified;
-  final bool editing;
 
   String toString() {
     return '''CheckpointsState { 
-      stage: $stage,
+      trigger: $trigger,
       checkpoints: $checkpoints
       filteringUnverified: $filteringUnverified
-      editing: $editing,
     }''';
   }
 }

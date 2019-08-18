@@ -20,17 +20,11 @@ class CheckpointView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bloc = Provider.of<CheckpointBloc>(context);
-    final checkpoint = state.checkpoint;
-    final onTap = state.editing ? null : bloc.verify;
     return CheckpointWidget(
-      checkpoint: checkpoint,
-      onTap: onTap,
+      checkpoint: state.checkpoint,
+      onTap: bloc.verify,
       checked: state.checked,
       lastCheck: state.lastCheck,
-      editing: state.editing,
-      onMoveForward: bloc.moveForward,
-      onMoveBackward: bloc.moveBackward,
-      onDelete: bloc.delete,
     );
   }
 }

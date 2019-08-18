@@ -3,6 +3,7 @@ import 'package:bsts/packages/se_bloc/factories.dart';
 import 'package:bsts/pages/home_page/checkpoints_view.dart';
 import 'package:bsts/pages/router.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatelessWidget {
@@ -51,15 +52,10 @@ class _HomePage extends StatelessWidget {
             icon: Icon(Icons.filter_list),
             title: Text('filter'),
           );
-    final toggleEditItem = state.editing
-        ? BottomNavigationBarItem(
-            icon: Icon(Icons.done),
-            title: Text('done'),
-          )
-        : BottomNavigationBarItem(
-            icon: Icon(Icons.edit),
-            title: Text('edit'),
-          );
+    final toggleEditItem = BottomNavigationBarItem(
+      icon: Icon(Icons.edit),
+      title: Text('edit'),
+    );
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -75,6 +71,12 @@ class _HomePage extends StatelessWidget {
             title: Text('add'),
           ),
           toggleEditItem,
+          BottomNavigationBarItem(
+            icon: Icon(
+              FontAwesomeIcons.question,
+            ),
+            title: Text('Help'),
+          ),
         ],
       ),
       floatingActionButton: FloatingActionButton(
@@ -94,6 +96,10 @@ class _HomePage extends StatelessWidget {
       Navigator.of(context).pushNamed(Routes.CATEGORY_SELECT);
       return;
     }
-    if (idx == 2) return bloc.toggleEditMode();
+    if (idx == 2) {
+      Navigator.of(context).pushNamed(Routes.CHECKPOINTS_EDIT);
+      return;
+    }
+    if (idx == 3) print('TODO: help');
   }
 }

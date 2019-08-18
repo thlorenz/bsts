@@ -1,6 +1,5 @@
 import 'package:bsts/models/checkpoint.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:meta/meta.dart';
 
 class CheckpointWidget extends StatelessWidget {
@@ -14,10 +13,6 @@ class CheckpointWidget extends StatelessWidget {
     this.iconSize = 80,
     this.iconTopPadding = 0,
     this.borderSide,
-    this.editing = false,
-    this.onMoveForward,
-    this.onMoveBackward,
-    this.onDelete,
   }) : super(key: key);
 
   final GestureTapCallback onTap;
@@ -29,16 +24,11 @@ class CheckpointWidget extends StatelessWidget {
   final double iconTopPadding;
   final BorderSide borderSide;
 
-  final bool editing;
-  final GestureTapCallback onMoveForward;
-  final GestureTapCallback onMoveBackward;
-  final GestureTapCallback onDelete;
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final borderSide = this.borderSide ??
-        (editing || checked
+        (checked
             ? BorderSide(width: 2, color: Colors.white24)
             : BorderSide(width: 2, color: Colors.orangeAccent));
     final tile = _CheckpointTile(
@@ -48,10 +38,6 @@ class CheckpointWidget extends StatelessWidget {
       iconSize: iconSize,
       checked: checked,
       lastCheck: lastCheck,
-      onMoveForward: onMoveForward,
-      onMoveBackward: onMoveBackward,
-      onDelete: onDelete,
-      editing: editing,
     );
 
     return Container(
@@ -86,10 +72,6 @@ class _CheckpointTile extends StatelessWidget {
     this.labelFontSize = 24,
     this.iconSize = 80,
     this.iconTopPadding = 0,
-    this.editing = false,
-    this.onMoveBackward,
-    this.onMoveForward,
-    this.onDelete,
   }) : super(key: key);
 
   final Checkpoint checkpoint;
@@ -98,10 +80,6 @@ class _CheckpointTile extends StatelessWidget {
   final double iconSize;
   final bool checked;
   final String lastCheck;
-  final bool editing;
-  final GestureTapCallback onMoveForward;
-  final GestureTapCallback onMoveBackward;
-  final GestureTapCallback onDelete;
 
   @override
   Widget build(BuildContext context) {
@@ -113,7 +91,7 @@ class _CheckpointTile extends StatelessWidget {
         fontFamily: checkpoint.iconFontFamily,
       ),
       color: Color(checkpoint.iconColor),
-      size: editing ? iconSize * 0.5 : iconSize,
+      size: iconSize,
     );
     return GridTile(
       header: Text(
@@ -128,41 +106,11 @@ class _CheckpointTile extends StatelessWidget {
         padding: EdgeInsets.only(top: iconTopPadding),
         child: icon,
       ),
-      footer: editing ? _editingFooter() : _nonEditingFooter(theme),
+      footer: _footer(theme),
     );
   }
 
-  Widget _editingFooter() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: <Widget>[
-        InkWell(
-          onTap: onMoveBackward,
-          child: Icon(
-            FontAwesomeIcons.chevronCircleLeft,
-            size: 35,
-          ),
-        ),
-        InkWell(
-          onTap: onDelete,
-          child: Icon(
-            Icons.delete,
-            size: 35,
-            color: Colors.red,
-          ),
-        ),
-        InkWell(
-          onTap: onMoveForward,
-          child: Icon(
-            FontAwesomeIcons.chevronCircleRight,
-            size: 35,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _nonEditingFooter(ThemeData theme) {
+  Widget _footer(ThemeData theme) {
     return checked
         ? Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
             Icon(Icons.check, color: Colors.greenAccent),
