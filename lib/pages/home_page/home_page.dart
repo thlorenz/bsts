@@ -52,10 +52,6 @@ class _HomePage extends StatelessWidget {
             icon: Icon(Icons.filter_list),
             title: Text('filter'),
           );
-    final toggleEditItem = BottomNavigationBarItem(
-      icon: Icon(Icons.edit),
-      title: Text('edit'),
-    );
     return Scaffold(
         appBar: AppBar(
           centerTitle: true,
@@ -67,10 +63,9 @@ class _HomePage extends StatelessWidget {
           items: [
             filterItem,
             BottomNavigationBarItem(
-              icon: Icon(Icons.add),
-              title: Text('add'),
+              icon: Icon(Icons.edit),
+              title: Text('edit'),
             ),
-            toggleEditItem,
             BottomNavigationBarItem(
               icon: Icon(FontAwesomeIcons.question),
               title: Text('Help'),
@@ -89,13 +84,9 @@ class _HomePage extends StatelessWidget {
 
     if (idx == 0) return bloc.toggleUnverified();
     if (idx == 1) {
-      Navigator.of(context).pushNamed(Routes.CATEGORY_SELECT);
-      return;
-    }
-    if (idx == 2) {
       Navigator.of(context).pushNamed(Routes.CHECKPOINTS_EDIT);
       return;
     }
-    if (idx == 3) print('TODO: help');
+    if (idx == 2) print('TODO: help');
   }
 }

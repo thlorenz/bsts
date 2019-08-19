@@ -34,7 +34,7 @@ class SelectCategoryPage extends StatelessWidget {
   }
 
   void _onNavigationItemSelected(BuildContext context, int idx) {
-    if (idx == 0) Navigator.of(context).pop();
+    if (idx == 0) Navigator.of(context)..pop()..pop();
     if (idx == 1) print('TODO: help');
   }
 }

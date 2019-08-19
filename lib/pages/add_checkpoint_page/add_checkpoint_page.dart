@@ -34,10 +34,6 @@ class AddCheckpointPage extends StatelessWidget {
               title: Text('Home'),
             ),
             BottomNavigationBarItem(
-              icon: Icon(FontAwesomeIcons.table),
-              title: Text('Categories'),
-            ),
-            BottomNavigationBarItem(
               icon: Icon(FontAwesomeIcons.question),
               title: Text('Help'),
             ),
@@ -64,9 +60,8 @@ class AddCheckpointPage extends StatelessWidget {
   }
 
   void _onNavigationItemSelected(BuildContext context, int idx) {
-    if (idx == 0) Navigator.of(context)..pop()..pop();
-    if (idx == 1) Navigator.of(context).pop();
-    if (idx == 2) print('TODO: help');
+    if (idx == 0) Navigator.of(context)..pop()..pop()..pop();
+    if (idx == 1) print('TODO: help');
   }
 
   Widget _buildAddCheckpointView(BuildContext context) =>
