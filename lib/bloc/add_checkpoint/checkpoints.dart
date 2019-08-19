@@ -20,6 +20,7 @@ Iterable<Checkpoint> get _kitchen sync* {
   yield _c('Oven', Icons.kitchen, Colors.brown);
   yield _c('Fridge', FontAwesomeIcons.snowflake, Colors.white);
   yield _c('Sink', FontAwesomeIcons.water, Colors.blue);
+  yield _c('Dishwasher', FontAwesomeIcons.glassMartini, Colors.cyan);
   yield _c('Gas', FontAwesomeIcons.fireAlt, Colors.blue);
   yield _c('Coffemaker', FontAwesomeIcons.coffee, Colors.black);
   yield _c('Blender', FontAwesomeIcons.blender, Colors.lightBlueAccent);
@@ -51,6 +52,7 @@ Iterable<Checkpoint> get _house sync* {
   yield _c('Bicycle', FontAwesomeIcons.biking, Colors.blueGrey);
   yield _c('Dumpster', FontAwesomeIcons.dumpster, Colors.grey);
   yield _c('Trash', FontAwesomeIcons.trashAlt, Colors.grey);
+  yield _c('Vacuum', FontAwesomeIcons.robot, Colors.grey);
 }
 
 Iterable<Checkpoint> get _pets sync* {
